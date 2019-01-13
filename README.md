@@ -4,7 +4,7 @@ Application loading customers from file in csv or xml pretty format to mySql dat
 # Usage
 Starting variables which need to be provided
 
--Dconfig.location= path to jdbc config file, avaiable in project.
+-Dconfig.location= path to jdbc.properties file, avaiable in project.
 
 -Dchunk.size= number of customer read and save into database at once.
 

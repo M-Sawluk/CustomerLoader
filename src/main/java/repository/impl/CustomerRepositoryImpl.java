@@ -28,7 +28,6 @@ public class CustomerRepositoryImpl implements CustomerRepository {
                 customerInsertStatement.setString(4, customer.getAge() == null ? null: customer.getAge().toString());
                 customerInsertStatement.addBatch();
             }
-            connection.commit();
             customerInsertStatement.executeBatch();
             customerInsertStatement.close();
 
@@ -42,9 +41,9 @@ public class CustomerRepositoryImpl implements CustomerRepository {
                     contactsInsertStatement.addBatch();
                 }
             }
-            connection.commit();
             contactsInsertStatement.executeBatch();
             contactsInsertStatement.close();
+            connection.commit();
             connection.close();
         } catch (SQLException e) {
             e.printStackTrace();

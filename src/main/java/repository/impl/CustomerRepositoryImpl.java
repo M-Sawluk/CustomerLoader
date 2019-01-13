@@ -31,7 +31,6 @@ public class CustomerRepositoryImpl implements CustomerRepository {
                 customerInsertStatement.addBatch();
             }
             customerInsertStatement.executeBatch();
-            customerInsertStatement.close();
 
             contactsInsertStatement = connection.prepareStatement(CONTACTS_SQL);
 
@@ -44,9 +43,7 @@ public class CustomerRepositoryImpl implements CustomerRepository {
                 }
             }
             contactsInsertStatement.executeBatch();
-            contactsInsertStatement.close();
             connection.commit();
-            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
 

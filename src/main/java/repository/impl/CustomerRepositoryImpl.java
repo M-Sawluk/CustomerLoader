@@ -17,9 +17,11 @@ public class CustomerRepositoryImpl implements CustomerRepository {
     @Override
     public void save(long idOffset, List<Customer> customers) {
         Connection connection = null;
+        PreparedStatement customerInsertStatement = null;
+        PreparedStatement contactsInsertStatement = null;
         try {
             connection = DataSource.getConnection();
-            PreparedStatement customerInsertStatement = connection.prepareStatement(CUSTOMER_SQL);
+            customerInsertStatement = connection.prepareStatement(CUSTOMER_SQL);
             connection.setAutoCommit(false);
             for (Customer customer : customers) {
                 customerInsertStatement.setString(1, String.valueOf(customer.getId() + idOffset));
@@ -31,7 +33,7 @@ public class CustomerRepositoryImpl implements CustomerRepository {
             customerInsertStatement.executeBatch();
             customerInsertStatement.close();
 
-            PreparedStatement contactsInsertStatement = connection.prepareStatement(CONTACTS_SQL);
+            contactsInsertStatement = connection.prepareStatement(CONTACTS_SQL);
 
             for (Customer customer : customers) {
                 contactsInsertStatement.setString(1, customer.getId().toString());
@@ -47,14 +49,25 @@ public class CustomerRepositoryImpl implements CustomerRepository {
             connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
+
+        } finally {
+            try {
+                if(connection != null) connection.close();
+                if(customerInsertStatement != null) customerInsertStatement.close();
+                if(contactsInsertStatement != null) contactsInsertStatement.close();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
         }
     }
 
     @Override
     public long getUserCount() {
+        Connection connection = null;
+        Statement statement = null;
         try {
-            Connection connection = DataSource.getConnection();
-            Statement statement = connection.createStatement();
+            connection = DataSource.getConnection();
+            statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(USER_COUNT);
             resultSet.next();
             long count = resultSet.getLong("count");
@@ -62,6 +75,13 @@ public class CustomerRepositoryImpl implements CustomerRepository {
             return count;
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if(connection != null) connection.close();
+                if(statement != null) statement.close();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
         }
         return 0;
     }
